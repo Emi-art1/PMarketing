@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Marketing Quest — Aprenda Marketing Estratégico jogando! 5 mundos, 15 fases, quizzes e recompensas.">
+<title>Marketing Quest ⚡ — Aprenda Marketing Jogando</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;600;700;800;900;1000&display=swap');
+
+/* ─── TOKENS ──────────────────────────────── */
+:root{
+  --bg:#090718;
+  --surface:#110f24;
+  --surface2:#1c1839;
+  --surface3:#252147;
+  --border:#302b60;
+  --border-bright:#4a4490;
+  --gold:#f5c842;
+  --gold-dark:#a07c10;
+  --gold-glow:#f5c84244;
+  --red:#ff5c5c;
+  --green:#4ee89a;
+  --blue:#5ab4f7;
+  --purple:#c084fc;
+  --text:#ede8ff;
+  --muted:#8880bb;
+  --r:14px;
+  --r-sm:8px;
+  --shadow:0 8px 40px rgba(0,0,0,.55);
+}
+
+/* ─── RESET ───────────────────────────────── */
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Nunito',sans-serif;
+  font-weight:700;
+  min-height:100vh;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+button{font-family:inherit;cursor:pointer;border:none;outline:none}
+.pixel{font-family:'Press Start 2P',monospace}
+
+/* ─── ANIMATED BG ─────────────────────────── */
+body::after{
+  content:'';
+  position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, #1a0f4a55 0%, transparent 70%),
+    radial-gradient(1.5px 1.5px at 15% 25%, #fff8 0%, transparent 100%),
+    radial-gradient(1px 1px at 35% 65%, #fff6 0%, transparent 100%),
+    radial-gradient(2px 2px at 60% 15%, #c4b0ff88 0%, transparent 100%),
+    radial-gradient(1px 1px at 80% 80%, #fff5 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 92% 35%, #fff7 0%, transparent 100%),
+    radial-gradient(1px 1px at 5% 90%, #fff4 0%, transparent 100%),
+    radial-gradient(1px 1px at 70% 50%, #fff4 0%, transparent 100%);
+}
+
+/* ─── SCREENS ─────────────────────────────── */
+.screen{display:none;position:relative;z-index:1;min-height:100vh}
+.screen.active{display:flex;flex-direction:column}
+
+/* ─── TYPOGRAPHY ──────────────────────────── */
+.t-gold{color:var(--gold)}
+.t-muted{color:var(--muted)}
+.t-green{color:var(--green)}
+.t-red{color:var(--red)}
+.t-blue{color:var(--blue)}
+
+/* ─── BUTTONS ─────────────────────────────── */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:14px 32px;border-radius:var(--r-sm);
+  font-family:'Press Start 2P',monospace;font-size:11px;
+  letter-spacing:.5px;text-transform:uppercase;
+  transition:transform .12s,box-shadow .12s,filter .12s;
+  position:relative;top:0;user-select:none;
+}
+.btn:active{top:3px!important}
+.btn-gold{
+  background:var(--gold);color:#1a0f00;
+  box-shadow:0 5px 0 var(--gold-dark),0 0 30px var(--gold-glow);
+}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 7px 0 var(--gold-dark),0 0 50px var(--gold-glow)}
+.btn-blue{
+  background:var(--blue);color:#041525;
+  box-shadow:0 5px 0 #1a5c8a;
+}
+.btn-blue:hover{transform:translateY(-2px);box-shadow:0 7px 0 #1a5c8a}
+.btn-green{
+  background:var(--green);color:#051a10;
+  box-shadow:0 5px 0 #1c7a47;
+}
+.btn-green:hover{transform:translateY(-2px);box-shadow:0 7px 0 #1c7a47}
+.btn-ghost{
+  background:transparent;color:var(--muted);
+  border:2px solid var(--border);box-shadow:none;
+}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold);transform:none}
+.btn-sm{padding:10px 20px;font-size:9px}
+.btn-lg{padding:18px 44px;font-size:13px}
+
+/* ─── CARDS ───────────────────────────────── */
+.card{
+  background:var(--surface);
+  border:2px solid var(--border);
+  border-radius:var(--r);
+  padding:28px;
+}
+
+/* ─── XP BAR (TOP) ────────────────────────── */
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 20px;
+  background:var(--surface);
+  border-bottom:2px solid var(--border);
+  gap:12px;flex-wrap:wrap;
+}
+.topbar-brand{font-size:clamp(8px,1.8vw,12px);color:var(--gold)}
+.xp-pill{
+  display:flex;align-items:center;gap:8px;
+  background:var(--surface2);
+  border:2px solid var(--gold);
+  border-radius:50px;padding:7px 18px;
+  font-size:14px;font-weight:900;color:var(--gold);
+}
+
+/* ─── FADE / SLIDE ────────────────────────── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideRight{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes pulseRing{0%,100%{box-shadow:0 0 0 0 #f5c84244}50%{box-shadow:0 0 0 7px #f5c84200}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+
+.anim-fadeUp{animation:fadeUp .4s ease both}
+.anim-slideRight{animation:slideRight .35s ease both}
+
+/* ─── INTRO ───────────────────────────────── */
+#intro{
+  align-items:center;justify-content:center;
+  text-align:center;padding:40px 20px;
+  background:radial-gradient(ellipse 100% 70% at 50% 20%, #1a0e4e 0%, var(--bg) 70%);
+}
+.intro-mascot{font-size:72px;display:block;animation:bounce 1.4s ease-in-out infinite;margin-bottom:20px}
+.intro-title{
+  font-size:clamp(22px,5vw,42px);
+  color:var(--gold);
+  text-shadow:0 0 50px #f5c84277, 3px 3px 0 #6b4900;
+  line-height:1.7;margin-bottom:12px;
+}
+.intro-tagline{font-size:clamp(13px,2vw,17px);color:var(--muted);margin-bottom:36px;font-weight:800}
+.intro-badges{
+  display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:40px;
+}
+.badge{
+  background:var(--surface2);border:2px solid var(--border);
+  border-radius:50px;padding:8px 18px;font-size:13px;
+  font-weight:800;white-space:nowrap;
+}
+.badge span{color:var(--gold)}
+.intro-footer{font-size:12px;color:var(--muted);margin-top:28px;line-height:1.8;max-width:420px}
+.intro-footer strong{color:var(--text)}
+
+/* ─── MAP ─────────────────────────────────── */
+#map{padding:0}
+.map-body{padding:24px 20px;max-width:1100px;margin:0 auto;width:100%}
+.map-heading{
+  text-align:center;margin-bottom:6px;
+  font-size:clamp(16px,3.5vw,28px);color:var(--gold);
+}
+.map-sub{text-align:center;color:var(--muted);font-size:15px;margin-bottom:32px}
+.worlds-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  gap:18px;
+}
+
+/* World Card */
+.wcard{
+  background:var(--surface);border:2px solid var(--border);
+  border-radius:var(--r);padding:22px;
+  cursor:pointer;transition:transform .18s,border-color .18s,box-shadow .18s;
+  position:relative;overflow:hidden;
+}
+.wcard::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,#fff1 0%,transparent 60%);
+  opacity:0;transition:opacity .2s;
+}
+.wcard:hover:not(.locked){transform:translateY(-5px);box-shadow:0 14px 40px #0007;border-color:var(--border-bright)}
+.wcard:hover:not(.locked)::before{opacity:1}
+.wcard.locked{opacity:.45;cursor:not-allowed;filter:grayscale(.6)}
+.wcard.done{border-color:var(--green)}
+.wcard.done:hover{border-color:var(--green)}
+
+.wcard-badge{
+  position:absolute;top:14px;right:14px;
+  font-size:11px;font-weight:900;
+  padding:3px 10px;border-radius:50px;
+  background:var(--surface3);
+}
+.wcard-badge.stars{color:var(--gold)}
+.wcard-badge.lock{font-size:18px;background:none}
+
+.wcard-emoji{font-size:44px;display:block;margin-bottom:10px}
+.wcard-num{font-size:9px;color:var(--muted);margin-bottom:7px}
+.wcard-name{font-size:16px;font-weight:900;margin-bottom:8px;line-height:1.35}
+.wcard-desc{font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.7;font-weight:700}
+.wcard-dots{display:flex;gap:7px}
+.dot{
+  width:30px;height:30px;border-radius:50%;
+  background:var(--surface2);border:2px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:900;color:var(--muted);
+  transition:all .2s;
+}
+.dot.done{background:var(--green);border-color:#1c7a47;color:#041a0a}
+.dot.cur{background:var(--gold);border-color:var(--gold-dark);color:#1a0f00;animation:pulseRing 1.8s infinite}
+
+/* ─── LEVEL SCREEN ────────────────────────── */
+#level-screen{padding:0}
+.level-wrap{max-width:780px;margin:0 auto;padding:24px 18px;width:100%}
+
+.level-topbar{
+  display:flex;align-items:center;gap:12px;margin-bottom:22px;flex-wrap:wrap;
+}
+.level-title-badge{
+  background:var(--surface2);border:2px solid var(--border);
+  border-radius:var(--r-sm);padding:6px 14px;
+  font-size:9px;color:var(--gold);white-space:nowrap;
+}
+.progress-track{
+  flex:1;min-width:80px;height:10px;
+  background:var(--surface2);border-radius:10px;overflow:hidden;
+}
+.progress-fill{
+  height:100%;border-radius:10px;
+  background:linear-gradient(90deg,var(--blue),var(--gold));
+  transition:width .5s cubic-bezier(.4,0,.2,1);
+}
+
+/* Learn */
+.learn-tag{
+  display:inline-block;padding:4px 14px;
+  background:var(--blue);color:#041525;
+  border-radius:50px;font-size:10px;font-weight:900;
+  margin-bottom:14px;
+}
+.learn-title{font-size:clamp(17px,3vw,24px);font-weight:900;margin-bottom:14px;line-height:1.35}
+.learn-body{font-size:14px;color:var(--muted);line-height:1.85;margin-bottom:18px}
+.learn-body strong{color:var(--text)}
+.concepts{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(190px,1fr));
+  gap:12px;margin:16px 0;
+}
+.concept{
+  background:var(--surface2);border:2px solid var(--border);
+  border-radius:12px;padding:14px;
+}
+.concept-icon{font-size:26px;margin-bottom:7px}
+.concept-name{font-size:12px;font-weight:900;color:var(--gold);margin-bottom:5px}
+.concept-text{font-size:12px;color:var(--muted);line-height:1.65}
+.info-strip{
+  background:rgba(245,200,66,.08);border:2px solid var(--gold);
+  border-radius:12px;padding:14px 16px;
+  font-size:13px;line-height:1.7;margin-top:16px;
+}
+.info-strip.blue{background:rgba(90,180,247,.08);border-color:var(--blue)}
+.info-strip.green{background:rgba(78,232,154,.08);border-color:var(--green)}
+
+/* Quiz */
+.quiz-meta{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:20px;
+}
+.quiz-counter{font-size:12px;color:var(--muted)}
+.quiz-xp{
+  background:var(--surface2);border:2px solid var(--gold);
+  border-radius:50px;padding:5px 14px;
+  font-size:12px;color:var(--gold);
+}
+.question{font-size:clamp(14px,2.4vw,18px);font-weight:900;margin-bottom:24px;line-height:1.55}
+.options{display:flex;flex-direction:column;gap:11px;margin-bottom:20px}
+.opt{
+  background:var(--surface2);border:2px solid var(--border);
+  border-radius:12px;padding:14px 18px;
+  text-align:left;font-size:14px;font-weight:700;
+  color:var(--text);transition:border-color .15s,background .15s;
+  display:flex;align-items:flex-start;gap:12px;line-height:1.55;
+}
+.opt:hover:not(:disabled){border-color:var(--blue);background:rgba(90,180,247,.07)}
+.opt:disabled{cursor:default}
+.opt.correct{border-color:var(--green)!important;background:rgba(78,232,154,.1)!important}
+.opt.wrong{border-color:var(--red)!important;background:rgba(255,92,92,.1)!important}
+.opt-key{
+  min-width:28px;height:28px;border-radius:6px;
+  background:var(--border);display:flex;align-items:center;
+  justify-content:center;font-size:11px;font-weight:900;
+  flex-shrink:0;margin-top:1px;transition:background .15s;
+}
+.opt.correct .opt-key{background:var(--green);color:#041a0a}
+.opt.wrong .opt-key{background:var(--red);color:#1a0000}
+.feedback{
+  border-radius:12px;padding:14px 16px;
+  font-size:13px;line-height:1.7;font-weight:700;
+  display:none;margin-bottom:16px;
+}
+.feedback.show{display:block}
+.feedback.ok{background:rgba(78,232,154,.1);border:2px solid var(--green);color:var(--green)}
+.feedback.no{background:rgba(255,92,92,.1);border:2px solid var(--red);color:var(--text)}
+
+/* ─── RESULT ──────────────────────────────── */
+#result-screen{
+  align-items:center;justify-content:center;
+  padding:40px 20px;
+  background:radial-gradient(ellipse 100% 60% at 50% 50%, #160e38 0%, var(--bg) 70%);
+}
+.result-box{
+  background:var(--surface);border:2px solid var(--border);
+  border-radius:20px;padding:44px 36px;
+  text-align:center;max-width:460px;width:100%;
+  animation:fadeUp .4s ease;
+}
+.result-emoji{font-size:68px;display:block;animation:bounce 1.4s ease-in-out infinite;margin-bottom:14px}
+.result-title{font-size:22px;font-weight:900;color:var(--gold);margin-bottom:8px}
+.result-sub{font-size:14px;color:var(--muted);margin-bottom:28px;line-height:1.6}
+.result-stars{font-size:38px;margin-bottom:20px;letter-spacing:4px}
+.result-xp{
+  background:rgba(245,200,66,.08);border:2px solid var(--gold);
+  border-radius:12px;padding:14px;
+  font-size:18px;font-weight:900;color:var(--gold);margin-bottom:28px;
+}
+.result-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+
+/* ─── CONFETTI ────────────────────────────── */
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:9999;overflow:hidden}
+.cp{
+  position:absolute;border-radius:2px;
+  animation:cpFall 2.8s linear forwards;
+}
+@keyframes cpFall{
+  0%{transform:translateY(-20px) rotate(0deg);opacity:1}
+  100%{transform:translateY(110vh) rotate(720deg);opacity:0}
+}
+
+/* ─── SCROLLBAR ───────────────────────────── */
+::-webkit-scrollbar{width:7px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+
+/* ─── RESPONSIVE ──────────────────────────── */
+@media(max-width:520px){
+  .card,.learn-card,.result-box{padding:20px}
+  .btn-lg{padding:14px 24px;font-size:11px}
+  .result-box{padding:28px 18px}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════ INTRO ══════════ -->
+<div id="intro" class="screen active">
+  <span class="intro-mascot">🧑‍💼</span>
+  <div class="intro-title pixel">MARKETING<br>QUEST</div>
+  <div class="intro-tagline">Aprenda Marketing Estratégico jogando!</div>
+
+  <div class="intro-badges">
+    <div class="badge">🗺️ <span>5</span> Mundos</div>
+    <div class="badge">⚔️ <span>15</span> Fases</div>
+    <div class="badge">🧠 <span>45</span> Questões</div>
+    <div class="badge">⭐ Estrelas & XP</div>
+    <div class="badge">💾 Progresso Salvo</div>
+  </div>
+
+  <button class="btn btn-gold btn-lg" onclick="showMap()">▶ INICIAR JORNADA</button>
+
+  <div class="intro-footer">
+    Conteúdo baseado no material de<br>
+    <strong>Marketing Estratégico · Técnico em Administração</strong><br>
+    Educação Profissional Paulista
+  </div>
+</div>
+
+<!-- ══════════ MAP ══════════ -->
+<div id="map" class="screen">
+  <div class="topbar">
+    <div class="topbar-brand pixel">MARKETING QUEST</div>
+    <div class="xp-pill">🪙 <span id="xp-count">0</span> XP</div>
+  </div>
+  <div class="map-body">
+    <div class="map-heading pixel">🗺️ Mapa do Mundo</div>
+    <div class="map-sub">Escolha um mundo para explorar!</div>
+    <div class="worlds-grid" id="worlds-grid"></div>
+  </div>
+</div>
+
+<!-- ══════════ LEVEL ══════════ -->
+<div id="level-screen" class="screen">
+  <div class="topbar">
+    <div class="topbar-brand pixel">MARKETING QUEST</div>
+    <div class="xp-pill">🪙 <span id="xp-count2">0</span> XP</div>
+  </div>
+  <div class="level-wrap">
+    <div class="level-topbar">
+      <button class="btn btn-ghost btn-sm" onclick="showMap()">← Mapa</button>
+      <div class="level-title-badge pixel" id="lvl-badge"></div>
+      <div class="progress-track"><div class="progress-fill" id="prog" style="width:0%"></div></div>
+    </div>
+    <div id="level-content"></div>
+  </div>
+</div>
+
+<!-- ══════════ RESULT ══════════ -->
+<div id="result-screen" class="screen">
+  <div class="result-box">
+    <span class="result-emoji" id="r-emoji">🏆</span>
+    <div class="result-title" id="r-title"></div>
+    <div class="result-sub" id="r-sub"></div>
+    <div class="result-stars" id="r-stars"></div>
+    <div class="result-xp" id="r-xp"></div>
+    <div class="result-btns">
+      <button class="btn btn-ghost btn-sm" onclick="showMap()">🗺️ Mapa</button>
+      <button class="btn btn-green btn-sm" id="r-next">Próxima Fase →</button>
+    </div>
+  </div>
+</div>
+
+<div id="confetti"></div>
+
+<script>
+/* ══════════════════════════════════════════
+   DATA
+══════════════════════════════════════════ */
+const WORLDS = [
+  {
+    id:0, emoji:'🌱', color:'#4ee89a',
+    name:'Conceitos Básicos de Marketing',
+    desc:'O que é marketing, seus tipos e os famosos Ps!',
+    levels:[
+      {
+        title:'Definição e Importância do Marketing',
+        sub:'Semana 1 · Aula 1',
+        learn:{
+          tag:'📖 Conceito Fundamental',
+          title:'O que é Marketing?',
+          body:`Marketing é a atividade e o conjunto de processos destinados a <strong>criar, comunicar, entregar e trocar ofertas</strong> que geram valor para os clientes, parceiros e a sociedade como um todo.<br><br>A criação de valor ocorre por meio do estabelecimento de <strong>relacionamentos duradouros</strong>, levando em conta o contexto de atuação e o bem-estar da sociedade.`,
+          concepts:[
+            {icon:'🤝',name:'Conhecer o Cliente',text:'Criar produtos e serviços que realmente atendam às expectativas dos consumidores.'},
+            {icon:'📢',name:'Comunicação Eficaz',text:'Fortalecer o relacionamento demonstrando que a empresa se importa com as necessidades individuais.'},
+            {icon:'💛',name:'Fidelização',text:'Programas de fidelidade, ofertas exclusivas e atendimento excelente constroem lealdade a longo prazo.'},
+            {icon:'🔄',name:'Engajamento Contínuo',text:'Estar presente em plataformas e canais para manter os clientes engajados com a marca.'},
+            {icon:'📊',name:'Feedback e Melhoria',text:'Ser receptivo a feedbacks permite melhorias contínuas em produtos e serviços.'},
+            {icon:'🚀',name:'Autoridade no Mercado',text:'Clientes/fãs satisfeitos promovem a marca voluntariamente, aumentando sua autoridade.'},
+          ],
+          info:'💡 Marketing de Relacionamento: estratégia que busca a fidelização de clientes e o fortalecimento da marca a médio e longo prazo.'
+        },
+        quiz:[
+          {q:'Qual é a definição mais completa de marketing?',opts:['Apenas vender produtos e serviços','Criar, comunicar, entregar e trocar ofertas que geram valor para clientes e a sociedade','Fazer publicidade em TV e rádio','Controlar o preço dos produtos no mercado'],ans:1,fb:'✅ Marketing vai muito além de vender! Envolve criar valor para clientes, parceiros e a sociedade como um todo.'},
+          {q:'O que é marketing de relacionamento?',opts:['Estratégia para criar preços baixos','Publicidade em redes sociais patrocinadas','Estratégia que busca fidelização de clientes e fortalecimento da marca','Venda direta ao consumidor final'],ans:2,fb:'✅ O marketing de relacionamento transforma clientes em fãs — eles compram mais e promovem a marca voluntariamente!'},
+          {q:'Qual ação NÃO contribui para criar valor ao cliente?',opts:['Ser receptivo a feedbacks para melhoria contínua','Criar programas de fidelidade exclusivos','Ignorar as necessidades e preferências do consumidor','Manter engajamento contínuo em canais digitais'],ans:2,fb:'✅ Ignorar o consumidor é o oposto do marketing! O foco deve ser sempre entender e gerar valor para o cliente.'}
+        ]
+      },
+      {
+        title:'Tipos de Marketing',
+        sub:'Semana 1 · Aula 2',
+        learn:{
+          tag:'🎨 Diversidade de Estratégias',
+          title:'Quais são os tipos de marketing?',
+          body:'Existem vários tipos de marketing, cada um com características e objetivos específicos. Conhecer a diferença é essencial para <strong>escolher a estratégia certa</strong> para cada situação!',
+          concepts:[
+            {icon:'📺',name:'Marketing Tradicional',text:'TV, rádio, jornais e outdoors. Alto custo, público amplo, mensagens unidirecionais.'},
+            {icon:'💻',name:'Marketing Digital',text:'Google Ads, Facebook Ads, SEO, e-mail marketing. Mensuração de dados e métricas precisas.'},
+            {icon:'📝',name:'Marketing de Conteúdo',text:'Vídeos, podcasts, blogs e e-books. Geração de engajamento, confiança e leads qualificados.'},
+            {icon:'🤝',name:'Marketing de Relacionamento',text:'Programas de fidelidade, atendimento personalizado e comunicação contínua com o cliente.'},
+            {icon:'⭐',name:'Marketing de Influência',text:'Parceria com influenciadores digitais para alcançar nichos específicos de mercado.'},
+            {icon:'🎭',name:'Marketing de Guerrilha',text:'Ações criativas e surpreendentes de baixo custo para gerar grande impacto e viralização.'},
+          ],
+          info:'💡 Cada tipo tem sua vantagem! O segredo é combinar estratégias de forma complementar para alcançar os melhores resultados.'
+        },
+        quiz:[
+          {q:'Qual tipo de marketing utiliza TV, rádio e jornais para atingir um público amplo?',opts:['Marketing Digital','Marketing de Guerrilha','Marketing Tradicional','Marketing de Influência'],ans:2,fb:'✅ O marketing tradicional usa mídia offline de massa para atingir grandes audiências com mensagens unidirecionais.'},
+          {q:'Uma marca faz parceria com um youtuber famoso para apresentar seu produto. Que tipo de marketing é esse?',opts:['Marketing de Conteúdo','Marketing de Influência','Marketing de Guerrilha','Marketing Tradicional'],ans:1,fb:'✅ Marketing de Influência! Parcerias com influenciadores digitais são eficazes para alcançar nichos específicos com credibilidade.'},
+          {q:'Vídeos, podcasts, blogs e e-books são exemplos de qual tipo de marketing?',opts:['Marketing Tradicional','Marketing de Relacionamento','Marketing de Guerrilha','Marketing de Conteúdo'],ans:3,fb:'✅ Marketing de Conteúdo! Cria e distribui material relevante e valioso para atrair e engajar potenciais clientes.'}
+        ]
+      },
+      {
+        title:'Os Ps do Marketing',
+        sub:'Semana 1 · Aula 3',
+        learn:{
+          tag:'🔑 Mix de Marketing',
+          title:'Dos 4 Ps aos 8 Ps do Marketing',
+          body:'Tradicionalmente, o marketing era dividido nos <strong>4 Ps</strong>: Produto, Preço, Praça e Promoção. Com o ambiente digital, mais 4 Ps foram adicionados para cobrir a experiência completa do cliente!',
+          concepts:[
+            {icon:'📦',name:'Produto',text:'O que é oferecido ao mercado para atender às necessidades e desejos dos clientes.'},
+            {icon:'💰',name:'Preço',text:'Tudo que o cliente renuncia — dinheiro, tempo e energia — para adquirir o produto.'},
+            {icon:'📍',name:'Praça',text:'Onde e como os produtos são disponibilizados e entregues no mercado.'},
+            {icon:'📣',name:'Promoção',text:'Comunicação que informa e convence os clientes sobre as vantagens dos produtos.'},
+            {icon:'⚡',name:'Performance',text:'Nível de desempenho e qualidade dos produtos e serviços a partir de metas estabelecidas.'},
+            {icon:'⚙️',name:'Processos',text:'Atividades, metodologias e fluxos necessários para criar e entregar valor aos clientes.'},
+            {icon:'🧑‍🤝‍🧑',name:'Pessoas',text:'Todos os envolvidos no consumo — tanto os clientes quanto os colaboradores da empresa.'},
+            {icon:'🎯',name:'Posicionamento',text:'A forma como a empresa e os produtos são percebidos pelas pessoas no mercado.'},
+          ],
+          info:'💡 Os 8 Ps podem ser usados por empresas de todos os tamanhos! O mix de marketing auxilia a pensar no todo: produto, valor, marca, pessoas e resultados.'
+        },
+        quiz:[
+          {q:'Quais são os 4 Ps originais do marketing (composto de marketing)?',opts:['Pessoas, Processos, Performance, Posicionamento','Produto, Preço, Praça e Promoção','Publicidade, Preço, Produto e Parceria','Produção, Propaganda, Preço e Praça'],ans:1,fb:'✅ Os 4 Ps originais são Produto, Preço, Praça e Promoção — o clássico mix de marketing criado para atender às necessidades dos clientes.'},
+          {q:'O "P" de Posicionamento no mix de marketing se refere a:',opts:['O local onde o produto é vendido','A política de preços da empresa','Como a empresa e seus produtos são percebidos pelas pessoas','O processo de fabricação do produto'],ans:2,fb:'✅ Posicionamento é como a marca é percebida na mente dos consumidores — fundamental para construir identidade de marca forte.'},
+          {q:'Por que os 4 Ps foram expandidos para 8 Ps?',opts:['Para facilitar a memorização da teoria','Para cobrir a experiência do cliente, especialmente no ambiente digital','Porque os 4 Ps originais estavam incorretos','Para reduzir os custos de marketing'],ans:1,fb:'✅ O ambiente digital e a necessidade de cuidar da experiência do cliente levaram à adição de mais 4 Ps: Performance, Processos, Pessoas e Posicionamento.'}
+        ]
+      }
+    ]
+  },
+  {
+    id:1, emoji:'🏙️', color:'#5ab4f7',
+    name:'Ambientes de Marketing',
+    desc:'Macroambiente, microambiente, Matriz PESTEL e Análise SWOT!',
+    levels:[
+      {
+        title:'Macroambiente – Matriz PESTEL',
+        sub:'Semana 2 · Aula 1',
+        learn:{
+          tag:'🌍 Análise Externa',
+          title:'O que é o Macroambiente?',
+          body:`O macroambiente engloba forças externas amplas que <strong>influenciam todas as empresas</strong> do mercado, mas sobre as quais elas têm pouco controle direto. A ferramenta para analisá-lo é a <strong>Matriz PESTEL</strong>.`,
+          concepts:[
+            {icon:'🏛️',name:'P – Político',text:'Regulamentações governamentais, políticas fiscais, estabilidade política e acordos comerciais.'},
+            {icon:'💵',name:'E – Econômico',text:'Inflação, taxas de juros, renda dos consumidores, câmbio e crescimento do PIB.'},
+            {icon:'👨‍👩‍👧',name:'S – Social',text:'Tendências culturais, demografia, estilo de vida, valores sociais e comportamento do consumidor.'},
+            {icon:'🤖',name:'T – Tecnológico',text:'Inovações, automação, pesquisa & desenvolvimento, digitalização e inteligência artificial.'},
+            {icon:'🌱',name:'E – Ecológico',text:'Questões ambientais, sustentabilidade, mudanças climáticas e legislação ambiental.'},
+            {icon:'⚖️',name:'L – Legal',text:'Leis trabalhistas, direitos do consumidor, proteção de dados e regulamentações setoriais.'},
+          ],
+          info:'🍔 Exemplo McDonald\'s: Político (regulamentos alimentares), Econômico (renda dos clientes), Social (tendências saudáveis), Tecnológico (app de delivery), Ecológico (embalagens sustentáveis), Legal (leis trabalhistas).'
+        },
+        quiz:[
+          {q:'O que representa a letra "P" na Matriz PESTEL?',opts:['Produção','Político','Propaganda','Parceria'],ans:1,fb:'✅ O "P" representa Político! Regulamentações governamentais, políticas fiscais e acordos comerciais são fatores políticos que afetam o negócio.'},
+          {q:'Inflação alta e variação do câmbio são exemplos de qual fator da PESTEL?',opts:['Legal','Social','Econômico','Tecnológico'],ans:2,fb:'✅ São fatores Econômicos! Inflação, taxas de juros e câmbio impactam diretamente o poder de compra dos consumidores.'},
+          {q:'Para que serve a Matriz PESTEL no marketing?',opts:['Definir o preço dos produtos','Analisar o ambiente externo identificando oportunidades e ameaças','Organizar a estrutura interna da empresa','Criar campanhas publicitárias'],ans:1,fb:'✅ A PESTEL analisa o macroambiente externo para identificar oportunidades a explorar e ameaças a se proteger!'}
+        ]
+      },
+      {
+        title:'Microambiente',
+        sub:'Semana 2 · Aula 2',
+        learn:{
+          tag:'🔬 Análise Próxima',
+          title:'O que é o Microambiente?',
+          body:`O microambiente engloba os agentes mais próximos da empresa que <strong>afetam diretamente</strong> sua capacidade de atender os clientes. Diferente do macroambiente, aqui a empresa tem <strong>mais poder de influência</strong> sobre as relações.`,
+          concepts:[
+            {icon:'🏢',name:'A Própria Empresa',text:'Departamentos internos que precisam estar alinhados para atender bem ao cliente.'},
+            {icon:'🚚',name:'Fornecedores',text:'Empresas e pessoas que fornecem recursos necessários para a produção dos produtos.'},
+            {icon:'🔗',name:'Intermediários',text:'Distribuidores, revendedores e varejistas que ajudam a entregar o produto ao cliente.'},
+            {icon:'😊',name:'Clientes',text:'O foco central de toda estratégia de marketing — sem eles, nada faz sentido.'},
+            {icon:'⚔️',name:'Concorrentes',text:'Empresas que disputam os mesmos clientes e recursos no mercado.'},
+            {icon:'🌐',name:'Públicos',text:'Grupos com interesse real ou potencial na empresa: mídia, governo, comunidade, investidores.'},
+          ],
+          info:'🎯 Enquanto o macroambiente é praticamente incontrolável, no microambiente a empresa pode agir ativamente para influenciar as relações!'
+        },
+        quiz:[
+          {q:'Qual é a diferença fundamental entre microambiente e macroambiente?',opts:['O microambiente é mais difícil de analisar','O microambiente engloba agentes mais próximos sobre os quais a empresa tem mais influência','O macroambiente é mais importante para pequenas empresas','Não há diferença significativa entre os dois'],ans:1,fb:'✅ O microambiente está mais próximo e a empresa tem capacidade de influenciá-lo — diferente das forças amplas do macroambiente.'},
+          {q:'Fornecedores, intermediários e concorrentes fazem parte de qual ambiente?',opts:['Macroambiente','Microambiente','Ambiente PESTEL','Ambiente SWOT'],ans:1,fb:'✅ Todos são agentes do microambiente — estão próximos à empresa e afetam diretamente sua capacidade de atender clientes.'},
+          {q:'Por que é importante analisar os concorrentes no microambiente?',opts:['Para copiar suas estratégias','Para entender quem disputa os mesmos clientes e desenvolver estratégias diferenciadas','Apenas para definir preços dos produtos','Para recrutar funcionários deles'],ans:1,fb:'✅ Conhecer a concorrência permite criar estratégias diferenciadas e encontrar oportunidades onde os concorrentes são fracos!'}
+        ]
+      },
+      {
+        title:'Análise SWOT',
+        sub:'Semana 2 · Aula 3',
+        learn:{
+          tag:'⚡ Ferramenta Estratégica',
+          title:'Análise SWOT: Forças, Fraquezas, Oportunidades e Ameaças',
+          body:'A análise SWOT integra os ambientes <strong>interno e externo</strong> da empresa para orientar decisões estratégicas. É uma das ferramentas mais utilizadas no marketing estratégico!',
+          concepts:[
+            {icon:'💪',name:'S – Strengths (Forças)',text:'Vantagens internas: o que a empresa faz bem e melhor do que os concorrentes.'},
+            {icon:'😟',name:'W – Weaknesses (Fraquezas)',text:'Pontos internos que precisam melhorar e que limitam o desempenho competitivo.'},
+            {icon:'🚀',name:'O – Opportunities (Oportunidades)',text:'Fatores externos favoráveis que a empresa pode aproveitar para crescer.'},
+            {icon:'⚡',name:'T – Threats (Ameaças)',text:'Fatores externos desfavoráveis que podem prejudicar o negócio.'},
+          ],
+          info:'🎯 Forças e Fraquezas são INTERNAS (empresa pode controlar). Oportunidades e Ameaças são EXTERNAS (vêm do ambiente).'
+        },
+        quiz:[
+          {q:'Na análise SWOT, "Oportunidades" se refere a:',opts:['Pontos fortes internos da empresa','Fatores externos favoráveis que a empresa pode explorar','Fraquezas internas que precisam ser corrigidas','Ameaças vindas dos concorrentes'],ans:1,fb:'✅ Oportunidades são fatores externos positivos — tendências de mercado, novos nichos e brechas na concorrência que a empresa pode aproveitar!'},
+          {q:'Quais elementos da SWOT são INTERNOS à empresa?',opts:['Oportunidades e Ameaças','Forças e Oportunidades','Forças e Fraquezas','Fraquezas e Ameaças'],ans:2,fb:'✅ Forças e Fraquezas são fatores internos — a empresa tem controle direto sobre eles e pode trabalhar para melhorá-los.'},
+          {q:'Uma empresa percebe que um novo regulamento governamental pode prejudicar seus negócios. Isso é:',opts:['Uma Força interna','Uma Fraqueza interna','Uma Oportunidade externa','Uma Ameaça externa'],ans:3,fb:'✅ É uma Ameaça! Regulamentos adversos são fatores externos desfavoráveis — a empresa não controla, mas precisa se preparar para lidar com eles.'}
+        ]
+      }
+    ]
+  },
+  {
+    id:2, emoji:'🧠', color:'#c084fc',
+    name:'Comportamento do Consumidor',
+    desc:'Processo de compra, fatores de influência e segmentação de mercado!',
+    levels:[
+      {
+        title:'Processo de Decisão de Compra',
+        sub:'Semana 3 · Aula 1',
+        learn:{
+          tag:'🛒 Jornada do Consumidor',
+          title:'Como o consumidor decide comprar?',
+          body:'O processo de decisão de compra passa por <strong>5 etapas</strong> bem definidas. Entender cada fase permite ao marketing criar estratégias certeiras para cada momento da jornada do cliente!',
+          concepts:[
+            {icon:'🤔',name:'1. Reconhecimento do Problema',text:'O consumidor percebe uma necessidade ou desejo não satisfeito que precisa resolver.'},
+            {icon:'🔍',name:'2. Busca de Informações',text:'Pesquisa em fontes internas (memória, experiências) e externas (internet, amigos, propagandas).'},
+            {icon:'⚖️',name:'3. Avaliação de Alternativas',text:'Compara opções disponíveis com base em critérios: preço, qualidade, marca e conveniência.'},
+            {icon:'💳',name:'4. Decisão de Compra',text:'Escolha do produto/serviço e definição de onde e como comprar.'},
+            {icon:'😊',name:'5. Comportamento Pós-Compra',text:'Satisfação ou insatisfação que afeta futuras compras, indicações e fidelidade à marca.'},
+          ],
+          info:'💡 O marketing pode agir em cada etapa! Na busca: SEO e anúncios. Na avaliação: reviews e comparações. No pós-compra: suporte e fidelização.'
+        },
+        quiz:[
+          {q:'Qual é a PRIMEIRA etapa do processo de decisão de compra?',opts:['Busca de informações','Avaliação de alternativas','Reconhecimento do problema','Decisão de compra'],ans:2,fb:'✅ Tudo começa com o Reconhecimento do Problema — quando o consumidor percebe uma necessidade ou desejo não atendido!'},
+          {q:'A etapa de "Avaliação de Alternativas" ocorre quando o consumidor:',opts:['Já realizou a compra e está avaliando','Compara opções com base em preço, qualidade e marca','Ainda não sabe que precisa do produto','Está fazendo a primeira busca por informações'],ans:1,fb:'✅ Na avaliação, o consumidor compara produtos e marcas antes de decidir qual comprar — aqui a diferenciação da sua marca é crucial!'},
+          {q:'Por que o comportamento pós-compra é importante para o marketing?',opts:['Porque determina o preço futuro do produto','Porque a satisfação ou insatisfação afeta futuras compras e recomendações','Porque é quando o marketing começa a agir pela primeira vez','Porque nesta fase se define a estratégia de distribuição'],ans:1,fb:'✅ O pós-compra define a fidelidade! Um cliente satisfeito volta e recomenda. Um insatisfeito pode prejudicar a reputação da marca.'}
+        ]
+      },
+      {
+        title:'Fatores que Influenciam o Consumidor',
+        sub:'Semana 3 · Aula 2',
+        learn:{
+          tag:'🎭 Influências de Compra',
+          title:'O que influencia as decisões de compra?',
+          body:'Nenhuma compra acontece no vácuo! Vários fatores moldam o comportamento do consumidor, e o marketing estratégico precisa considerá-los para criar campanhas mais eficientes.',
+          concepts:[
+            {icon:'🧬',name:'Fatores Pessoais',text:'Idade, ciclo de vida, ocupação, renda, estilo de vida e personalidade do consumidor.'},
+            {icon:'🧠',name:'Fatores Psicológicos',text:'Motivação, percepção, aprendizado, crenças e atitudes que moldam as decisões.'},
+            {icon:'👨‍👩‍👧‍👦',name:'Fatores Sociais',text:'Família, grupos de referência, influenciadores, papéis sociais e status na sociedade.'},
+            {icon:'🌍',name:'Fatores Culturais',text:'Cultura, subcultura e classe social que moldam profundamente os valores e preferências.'},
+          ],
+          info:'🎯 Entender esses fatores permite criar campanhas personalizadas que "falam a língua" do consumidor e se conectam com sua realidade!'
+        },
+        quiz:[
+          {q:'Quando uma pessoa compra um produto porque seus amigos e influenciadores usam, qual fator está influenciando?',opts:['Fatores Pessoais','Fatores Psicológicos','Fatores Sociais','Fatores Culturais'],ans:2,fb:'✅ Fatores Sociais! Grupos de referência como amigos e influenciadores têm grande poder sobre as decisões de compra.'},
+          {q:'A motivação, percepção e aprendizado de um consumidor são exemplos de fatores:',opts:['Culturais','Psicológicos','Sociais','Pessoais'],ans:1,fb:'✅ São fatores Psicológicos — internos ao indivíduo — que afetam como ele percebe, processa e decide sobre uma compra.'},
+          {q:'Valores, tradições e modo de vida de uma sociedade que influenciam o consumo são exemplos de:',opts:['Fatores Pessoais','Fatores Psicológicos','Fatores Sociais','Fatores Culturais'],ans:3,fb:'✅ Fatores Culturais! Cultura, subcultura e classe social são as forças mais profundas e duradouras que moldam o comportamento do consumidor.'}
+        ]
+      },
+      {
+        title:'Segmentação de Mercado',
+        sub:'Semana 3 · Aula 3',
+        learn:{
+          tag:'🎯 Foco Estratégico',
+          title:'Por que segmentar o mercado?',
+          body:'Segmentar significa <strong>dividir o mercado em grupos</strong> com características semelhantes para direcionar estratégias mais eficientes. Ninguém consegue atender a todos — o segredo é escolher bem quem atender!',
+          concepts:[
+            {icon:'📍',name:'Segmentação Geográfica',text:'Divide por localização: região, cidade, país, clima e densidade populacional.'},
+            {icon:'👤',name:'Segmentação Demográfica',text:'Divide por características: idade, gênero, renda, escolaridade e ocupação.'},
+            {icon:'🧘',name:'Segmentação Psicográfica',text:'Divide por estilo de vida, valores, personalidade e interesses do consumidor.'},
+            {icon:'🛒',name:'Segmentação Comportamental',text:'Divide pelo comportamento: frequência de uso, fidelidade à marca e benefícios buscados.'},
+          ],
+          info:'💡 Após segmentar, a empresa define seu público-alvo e cria um posicionamento específico e relevante para esse grupo!'
+        },
+        quiz:[
+          {q:'Uma empresa decide focar em mulheres de 18 a 35 anos com renda média. Que tipo de segmentação é essa?',opts:['Geográfica','Demográfica','Psicográfica','Comportamental'],ans:1,fb:'✅ Segmentação Demográfica! Dividir o mercado por faixa etária, gênero e renda é uma das segmentações mais utilizadas no marketing.'},
+          {q:'Dividir o mercado por estilo de vida, valores e personalidade é chamado de segmentação:',opts:['Demográfica','Geográfica','Psicográfica','Comportamental'],ans:2,fb:'✅ Segmentação Psicográfica! Vai além dos dados básicos e considera o "como as pessoas vivem, pensam e se veem".'},
+          {q:'Por que a segmentação de mercado é importante para o marketing estratégico?',opts:['Para reduzir a qualidade dos produtos','Porque permite direcionar estratégias mais eficientes para grupos com necessidades específicas','Para aumentar preços sem justificativa','Para eliminar concorrentes do mercado'],ans:1,fb:'✅ Segmentar permite criar comunicações e produtos mais relevantes para grupos específicos, aumentando muito a eficiência do marketing!'}
+        ]
+      }
+    ]
+  },
+  {
+    id:3, emoji:'⚔️', color:'#f5c842',
+    name:'Estratégias de Marketing Competitivo',
+    desc:'Aplique PESTEL, SWOT e análise de ambientes em situações reais!',
+    levels:[
+      {
+        title:'Aplicação Prática da Matriz PESTEL',
+        sub:'Semana 4 · Aula 1',
+        learn:{
+          tag:'🔧 Prática',
+          title:'PESTEL na Vida Real',
+          body:'Aplicar a Matriz PESTEL significa <strong>mapear cada fator externo</strong> e avaliar como ele impacta o negócio. Veja como funciona na prática com uma abordagem passo a passo!',
+          concepts:[
+            {icon:'🔍',name:'Passo 1: Identifique',text:'Para cada letra da PESTEL, liste os principais fatores que afetam seu setor e mercado.'},
+            {icon:'⚖️',name:'Passo 2: Avalie',text:'Determine se cada fator representa uma oportunidade (+) ou ameaça (–) para o negócio.'},
+            {icon:'🎯',name:'Passo 3: Priorize',text:'Foque nos fatores de maior impacto e probabilidade de ocorrência para o negócio.'},
+            {icon:'📋',name:'Passo 4: Estrategize',text:'Crie estratégias para aproveitar oportunidades e mitigar ameaças identificadas.'},
+          ],
+          info:'🍔 McDonald\'s na prática: P(regulamentos alimentares/trabalhistas), E(renda dos consumidores/inflação), S(tendência saudável), T(app/delivery/automação), E(embalagens sustentáveis), L(leis trabalhistas/proteção de dados).'
+        },
+        quiz:[
+          {q:'Descobrir que uma nova lei reduz impostos no setor em que sua empresa atua é:',opts:['Uma ameaça política negativa','Uma oportunidade política favorável','Uma fraqueza interna da empresa','Um fator social negativo'],ans:1,fb:'✅ É uma Oportunidade Política! Redução de impostos é um fator político positivo que pode reduzir custos e aumentar a competitividade.'},
+          {q:'Uma empresa de turismo percebe que as pessoas estão valorizando cada vez mais experiências ao invés de bens materiais. Qual fator PESTEL é esse?',opts:['Econômico','Tecnológico','Social','Legal'],ans:2,fb:'✅ É um fator Social! Mudanças no estilo de vida e nos valores da sociedade são fatores sociais na análise PESTEL.'},
+          {q:'Qual é o principal objetivo de aplicar a Matriz PESTEL na estratégia de marketing?',opts:['Definir salários dos funcionários','Identificar oportunidades e ameaças externas para criar estratégias mais eficazes','Criar o logotipo e identidade visual da empresa','Selecionar e avaliar fornecedores'],ans:1,fb:'✅ A PESTEL mapeia o ambiente externo para que a empresa crie estratégias alinhadas à realidade do mercado, aproveitando oportunidades e se protegendo de ameaças!'}
+        ]
+      },
+      {
+        title:'Aplicação Prática da Análise SWOT',
+        sub:'Semana 4 · Aula 2',
+        learn:{
+          tag:'⚡ SWOT em Ação',
+          title:'Como usar a SWOT na prática?',
+          body:'A SWOT combina análise interna (Forças e Fraquezas) com análise externa (Oportunidades e Ameaças) para gerar <strong>4 estratégias clássicas</strong> e complementares!',
+          concepts:[
+            {icon:'🚀',name:'SO – Força + Oportunidade',text:'Use suas forças para aproveitar oportunidades. Estratégia ofensiva de crescimento e expansão.'},
+            {icon:'🛡️',name:'WO – Fraqueza + Oportunidade',text:'Melhore fraquezas para aproveitar oportunidades. Estratégia de desenvolvimento e capacitação.'},
+            {icon:'⚔️',name:'ST – Força + Ameaça',text:'Use suas forças para minimizar ameaças externas. Estratégia defensiva de manutenção.'},
+            {icon:'🔧',name:'WT – Fraqueza + Ameaça',text:'Reduza fraquezas e evite ameaças. Estratégia de sobrevivência e reposicionamento.'},
+          ],
+          info:'💡 A SWOT não é só diagnóstico — é um mapa de ação! Cada combinação gera uma estratégia diferente. Escolha a que melhor se adequa ao momento da empresa.'
+        },
+        quiz:[
+          {q:'Quando uma empresa usa suas principais forças para aproveitar oportunidades de mercado, está usando qual estratégia SWOT?',opts:['WT (Fraqueza + Ameaça)','ST (Força + Ameaça)','SO (Força + Oportunidade)','WO (Fraqueza + Oportunidade)'],ans:2,fb:'✅ Estratégia SO! A mais ofensiva e expansiva — usa o melhor da empresa para capturar o que o mercado oferece de melhor.'},
+          {q:'Uma startup vê uma oportunidade de mercado, mas tem pouca experiência técnica (fraqueza). Qual estratégia SWOT deve usar?',opts:['SO – Força + Oportunidade','WO – Fraqueza + Oportunidade','ST – Força + Ameaça','WT – Fraqueza + Ameaça'],ans:1,fb:'✅ Estratégia WO! Foca em superar as limitações internas (contratar especialistas, capacitar equipe) para capturar a oportunidade externa.'},
+          {q:'Qual é a estratégia SWOT mais defensiva, usada quando a empresa enfrenta ameaças externas e também possui fraquezas internas?',opts:['SO','WO','ST','WT'],ans:3,fb:'✅ Estratégia WT! É a de sobrevivência — minimize os danos, fortaleça o que puder e reposicione-se para um momento mais favorável.'}
+        ]
+      },
+      {
+        title:'Análise do Macro e Microambiente',
+        sub:'Semana 4 · Aula 3',
+        learn:{
+          tag:'🔗 Integração Estratégica',
+          title:'Macro e Micro juntos na estratégia',
+          body:'Na prática, as empresas analisam <strong>macro e microambiente em conjunto</strong> para ter uma visão completa. O macroambiente define o cenário geral; o microambiente revela os atores diretos que afetam o negócio.',
+          concepts:[
+            {icon:'🌎',name:'Visão 360°',text:'Analisar os dois ambientes juntos revela uma imagem completa dos desafios e oportunidades do negócio.'},
+            {icon:'🔄',name:'Integração com SWOT',text:'Macroambiente alimenta as Oportunidades e Ameaças (externas). Microambiente contribui com dados internos.'},
+            {icon:'📊',name:'Tomada de Decisão',text:'Com dados de ambos os ambientes, as decisões estratégicas são mais embasadas e assertivas.'},
+            {icon:'⏱️',name:'Monitoramento Contínuo',text:'Ambientes mudam constantemente! O marketing estratégico monitora para adaptar estratégias rapidamente.'},
+          ],
+          info:'🎯 Dica profissional: use PESTEL para o macroambiente e as 5 Forças de Porter para o microambiente, alimentando sua análise SWOT!'
+        },
+        quiz:[
+          {q:'Como o macroambiente contribui para a análise SWOT?',opts:['Define apenas as Forças internas da empresa','Alimenta principalmente as Oportunidades e Ameaças (fatores externos)','Serve apenas para identificar Fraquezas internas','Não tem relação com a análise SWOT'],ans:1,fb:'✅ O macroambiente (fatores externos amplos) alimenta as Oportunidades e Ameaças da SWOT — ele define o cenário no qual a empresa atua.'},
+          {q:'Por que é importante analisar macro e microambiente de forma integrada?',opts:['Para economizar tempo na análise','Para ter uma visão completa dos desafios e oportunidades do negócio','Apenas para cumprir requisitos legais e regulatórios','Para reduzir o número de funcionários'],ans:1,fb:'✅ A visão integrada evita pontos cegos estratégicos e fornece uma base sólida para decisões que levam em conta todo o contexto do negócio.'},
+          {q:'O monitoramento contínuo do ambiente é importante porque:',opts:['Os ambientes nunca mudam de forma significativa','Os ambientes mudam constantemente e as estratégias precisam se adaptar','Apenas o macroambiente precisa de monitoramento','Apenas o microambiente precisa de monitoramento'],ans:1,fb:'✅ Ambientes mudam! Novas leis, crises econômicas, mudanças de comportamento... O monitoramento contínuo é o que mantém a estratégia relevante e eficaz.'}
+        ]
+      }
+    ]
+  },
+  {
+    id:4, emoji:'🏆', color:'#ff5c5c',
+    name:'Posicionamento Estratégico e Vantagem Competitiva',
+    desc:'Analise concorrentes, defina posicionamento e conquiste vantagem competitiva!',
+    levels:[
+      {
+        title:'Análise da Concorrência',
+        sub:'Semana 5 · Aula 1',
+        learn:{
+          tag:'🕵️ Inteligência Competitiva',
+          title:'Como analisar os concorrentes?',
+          body:'Conhecer a concorrência é fundamental para se destacar no mercado. A análise envolve <strong>identificar, estudar e comparar</strong> os principais players do setor para encontrar oportunidades de diferenciação.',
+          concepts:[
+            {icon:'🔍',name:'Identifique os Tipos',text:'Diretos (mesmo produto/público), Indiretos (produtos substitutos) e Potenciais (possíveis entrantes no mercado).'},
+            {icon:'📊',name:'Avalie as Estratégias',text:'Preços, produtos, canais de distribuição, comunicação, posicionamento e pontos fortes e fracos.'},
+            {icon:'💡',name:'Encontre as Lacunas',text:'Onde a concorrência é fraca? Quais necessidades não atende? Essas são suas oportunidades de mercado!'},
+            {icon:'🎯',name:'Benchmarking',text:'Aprenda com as melhores práticas do mercado para melhorar seus próprios processos e resultados.'},
+          ],
+          info:'⚔️ Analisar concorrentes não é para copiá-los — é para se diferenciar estrategicamente e encontrar seu espaço único no mercado!'
+        },
+        quiz:[
+          {q:'Concorrentes "diretos" são aqueles que:',opts:['Vendem produtos que complementam os seus','Oferecem o mesmo produto ou serviço para o mesmo público-alvo','Poderão entrar no seu mercado no futuro','São fornecedores das suas matérias-primas'],ans:1,fb:'✅ Concorrentes diretos disputam os mesmos clientes com produtos ou serviços similares aos seus — são a concorrência mais imediata!'},
+          {q:'O que é benchmarking?',opts:['Uma estratégia de preços abaixo da concorrência','Aprender com as melhores práticas do mercado para melhorar seus processos e resultados','Um tipo de publicidade comparativa','Uma análise do macroambiente da empresa'],ans:1,fb:'✅ Benchmarking é comparar suas práticas com os líderes do mercado para identificar melhorias e elevar seu nível de desempenho!'},
+          {q:'Por que identificar lacunas na concorrência é estrategicamente importante?',opts:['Para imitar exatamente o que eles fazem bem','Para encontrar oportunidades onde os concorrentes são fracos ou não atendem o mercado adequadamente','Para definir o logotipo e as cores da empresa','Para reduzir o investimento em marketing'],ans:1,fb:'✅ As lacunas da concorrência são as suas oportunidades! Onde eles são fracos ou omissos, você pode criar diferenciação e conquistar clientes.'}
+        ]
+      },
+      {
+        title:'Estratégias de Posicionamento',
+        sub:'Semana 5 · Aula 2',
+        learn:{
+          tag:'🎯 Mente do Consumidor',
+          title:'O que é Posicionamento de Marketing?',
+          body:'Posicionamento é o <strong>lugar que a marca ocupa na mente do consumidor</strong>. Uma empresa bem posicionada é imediatamente lembrada quando o cliente pensa em uma determinada categoria de produto.',
+          concepts:[
+            {icon:'💰',name:'Por Preço/Qualidade',text:'Posicionar como mais barato OU como mais premium. Ex: Casas Bahia (custo-benefício) vs Apple (premium).'},
+            {icon:'🛡️',name:'Por Benefício',text:'Destaque um benefício único e específico. Ex: "o hidratante que age 10x mais rápido".'},
+            {icon:'🥊',name:'Por Concorrente',text:'Comparar-se diretamente com a concorrência. Ex: "Não é X, é melhor!" (avis vs hertz).'},
+            {icon:'👤',name:'Por Usuário',text:'Associar a marca a um perfil específico de usuário. Ex: produtos exclusivos para atletas de alto rendimento.'},
+            {icon:'🌎',name:'Por Origem',text:'Usar a procedência como diferencial de qualidade. Ex: "vinho francês", "café colombiano".'},
+            {icon:'⚡',name:'Por Atributo',text:'Destacar uma característica técnica única. Ex: "a bateria que dura 3 dias sem carregar".'},
+          ],
+          info:'🎯 Um bom posicionamento é claro, relevante para o público-alvo e difícil de ser copiado pelos concorrentes!'
+        },
+        quiz:[
+          {q:'Posicionamento de marketing significa:',opts:['A localização física da empresa no mercado','O lugar que a marca ocupa na mente do consumidor','O preço dos produtos em relação ao mercado','A posição da empresa no ranking de vendas do setor'],ans:1,fb:'✅ Posicionamento é sobre percepção! É como a marca é vista, sentida e lembrada na mente dos consumidores — não apenas o que você diz, mas o que eles acreditam.'},
+          {q:'Uma marca se posiciona como "o mais premium e exclusivo do mercado". Qual estratégia de posicionamento é essa?',opts:['Por usuário específico','Por comparação com concorrente','Por preço/qualidade (premium)','Por origem geográfica'],ans:2,fb:'✅ Posicionamento por Qualidade/Preço (premium)! A marca cria uma percepção de superioridade e exclusividade que justifica preços mais elevados.'},
+          {q:'Quais características definem um posicionamento de marketing eficaz?',opts:['Genérico para atingir todos os públicos','Caro, exclusivo e difícil de encontrar','Claro, relevante para o público-alvo e difícil de ser copiado','Muda frequentemente para acompanhar tendências de mercado'],ans:2,fb:'✅ Um posicionamento eficaz é claro (fácil de entender), relevante (importa para o público) e sustentável (difícil de replicar pelos concorrentes)!'}
+        ]
+      },
+      {
+        title:'Vantagem Competitiva',
+        sub:'Semana 5 · Aula 3',
+        learn:{
+          tag:'🏆 Diferencial Estratégico',
+          title:'O que é Vantagem Competitiva?',
+          body:'Vantagem competitiva é um <strong>conjunto de características</strong> que permitem à empresa superar a concorrência de forma sustentável. Michael Porter identificou <strong>3 estratégias genéricas</strong> para alcançá-la!',
+          concepts:[
+            {icon:'💰',name:'Liderança em Custo',text:'Ser o produtor de menor custo do setor, oferecendo preços mais baixos ou maior margem de lucro.'},
+            {icon:'⭐',name:'Diferenciação',text:'Oferecer algo único e valioso que justifique um preço premium — inovação, design, qualidade ou marca.'},
+            {icon:'🎯',name:'Foco/Nicho',text:'Concentrar-se em um segmento específico e atendê-lo excepcionalmente melhor do que qualquer concorrente.'},
+            {icon:'♻️',name:'Sustentabilidade',text:'A vantagem deve ser difícil de imitar, rara no mercado e durável ao longo do tempo.'},
+          ],
+          info:'🏆 Empresas que tentam ser tudo para todos ficam "presas no meio" e perdem para quem tem uma estratégia clara e bem executada. Escolha e execute!'
+        },
+        quiz:[
+          {q:'Segundo Michael Porter, qual das seguintes NÃO é uma estratégia genérica de vantagem competitiva?',opts:['Liderança em custo','Diferenciação','Marketing de guerrilha','Foco/Nicho'],ans:2,fb:'✅ As 3 estratégias genéricas de Porter são: Liderança em Custo, Diferenciação e Foco/Nicho. Marketing de guerrilha é uma tática de comunicação, não uma vantagem competitiva.'},
+          {q:'Uma empresa que oferece produtos únicos e cobra preços mais elevados por isso está usando a estratégia de:',opts:['Liderança em custo','Diferenciação','Foco em nicho','Benchmarking competitivo'],ans:1,fb:'✅ Estratégia de Diferenciação! Cria valor único e exclusivo que os clientes reconhecem e estão dispostos a pagar mais para ter.'},
+          {q:'Para que uma vantagem competitiva seja realmente eficaz e duradoura, ela deve ser:',opts:['Barata e fácil de copiar por qualquer concorrente','Difícil de imitar, rara no mercado e sustentável ao longo do tempo','Baseada apenas em oferecer preços mais baixos','Focada exclusivamente em campanhas publicitárias'],ans:1,fb:'✅ Uma vantagem competitiva real é difícil de replicar, rara e durável — são essas características que garantem liderança sustentável de mercado!'}
+        ]
+      }
+    ]
+  }
+];
+
+/* ══════════════════════════════════════════
+   STATE  (persisted in localStorage)
+══════════════════════════════════════════ */
+const SAVE_KEY = 'mq_save_v2';
+let S = loadState();
+
+function defaultState(){
+  return {xp:0, progress:[0,0,0,0,0], stars:[[],[],[],[],[]]};
+}
+function loadState(){
+  try{
+    const raw = localStorage.getItem(SAVE_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return defaultState();
+}
+function saveState(){
+  try{ localStorage.setItem(SAVE_KEY, JSON.stringify(S)); }catch(e){}
+}
+
+let CW=0, CL=0, qIdx=0, qScore=0;
+
+/* ══════════════════════════════════════════
+   UTILS
+══════════════════════════════════════════ */
+function $id(id){ return document.getElementById(id); }
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  $id(id).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function setXP(){
+  $id('xp-count').textContent = S.xp;
+  $id('xp-count2').textContent = S.xp;
+}
+function setProg(pct){
+  $id('prog').style.width = pct+'%';
+}
+
+/* ══════════════════════════════════════════
+   MAP
+══════════════════════════════════════════ */
+function showMap(){
+  renderMap();
+  showScreen('map');
+  setXP();
+}
+
+function renderMap(){
+  const grid = $id('worlds-grid');
+  grid.innerHTML='';
+  WORLDS.forEach((w,wi)=>{
+    const done = S.progress[wi];
+    const total = w.levels.length;
+    const locked = wi>0 && S.progress[wi-1] < WORLDS[wi-1].levels.length;
+    const completed = done >= total;
+    const starTotal = (S.stars[wi]||[]).reduce((a,b)=>a+b,0);
+
+    const card = document.createElement('div');
+    card.className='wcard'+(locked?' locked':'')+(completed?' done':'');
+
+    // badge
+    let badge='';
+    if(locked) badge='<div class="wcard-badge lock">🔒</div>';
+    else if(completed) badge=`<div class="wcard-badge stars">⭐ ${starTotal}/${total*3}</div>`;
+
+    // dots
+    const dots = w.levels.map((_,li)=>{
+      const d = li < done;
+      const c = li===done && !locked;
+      return `<div class="dot ${d?'done':c?'cur':''}">${d?'✓':li+1}</div>`;
+    }).join('');
+
+    card.innerHTML=`
+      ${badge}
+      <span class="wcard-emoji">${w.emoji}</span>
+      <div class="wcard-num pixel">MUNDO ${wi+1}</div>
+      <div class="wcard-name">${w.name}</div>
+      <div class="wcard-desc">${w.desc}</div>
+      <div class="wcard-dots">${dots}</div>
+    `;
+    if(!locked) card.onclick=()=>enterWorld(wi);
+    grid.appendChild(card);
+  });
+}
+
+/* ══════════════════════════════════════════
+   LEVEL
+══════════════════════════════════════════ */
+function enterWorld(wi){
+  CW=wi;
+  CL = Math.min(S.progress[wi], WORLDS[wi].levels.length-1);
+  beginLevel();
+}
+
+function beginLevel(){
+  qIdx=0; qScore=0;
+  const w=WORLDS[CW], lv=w.levels[CL];
+  $id('lvl-badge').textContent=`Mundo ${CW+1} · Fase ${CL+1}/${w.levels.length}`;
+  setProg(0);
+  showScreen('level-screen');
+  renderLearn(lv);
+}
+
+function renderLearn(lv){
+  const l=lv.learn;
+  const concepts = l.concepts.map(c=>`
+    <div class="concept">
+      <div class="concept-icon">${c.icon}</div>
+      <div class="concept-name">${c.name}</div>
+      <div class="concept-text">${c.text}</div>
+    </div>`).join('');
+
+  $id('level-content').innerHTML=`
+    <div class="card anim-fadeUp">
+      <span class="learn-tag">${l.tag}</span>
+      <div class="learn-title">${l.title}</div>
+      <div class="learn-body">${l.body}</div>
+      <div class="concepts">${concepts}</div>
+      <div class="info-strip">${l.info}</div>
+    </div>
+    <div style="text-align:center;margin-top:20px">
+      <button class="btn btn-blue" onclick="beginQuiz()">🎮 Iniciar Quiz →</button>
+    </div>
+  `;
+  setProg(15);
+}
+
+function beginQuiz(){
+  qIdx=0; qScore=0;
+  renderQ();
+}
+
+function renderQ(){
+  const lv=WORLDS[CW].levels[CL];
+  const q=lv.quiz[qIdx];
+  const total=lv.quiz.length;
+  setProg(15 + ((qIdx/total)*85));
+  const letters=['A','B','C','D'];
+  const opts=q.opts.map((o,i)=>`
+    <button class="opt anim-slideRight" style="animation-delay:${i*.07}s" onclick="pick(${i})">
+      <span class="opt-key">${letters[i]}</span>${o}
+    </button>`).join('');
+
+  $id('level-content').innerHTML=`
+    <div class="card anim-fadeUp">
+      <div class="quiz-meta">
+        <div class="quiz-counter">Questão ${qIdx+1} de ${total}</div>
+        <div class="quiz-xp">🪙 ${qScore*10} XP</div>
+      </div>
+      <div class="question">${q.q}</div>
+      <div class="options">${opts}</div>
+      <div class="feedback" id="fb"></div>
+    </div>
+  `;
+}
+
+function pick(idx){
+  const lv=WORLDS[CW].levels[CL];
+  const q=lv.quiz[qIdx];
+  const ok=idx===q.ans;
+
+  document.querySelectorAll('.opt').forEach((b,i)=>{
+    b.disabled=true;
+    if(i===q.ans) b.classList.add('correct');
+    else if(i===idx&&!ok) b.classList.add('wrong');
+  });
+  const fb=$id('fb');
+  if(ok){ fb.className='feedback ok show'; fb.textContent=q.fb; qScore++; }
+  else  { fb.className='feedback no show'; fb.textContent='❌ '+q.fb; }
+
+  setTimeout(()=>{
+    qIdx++;
+    if(qIdx<lv.quiz.length) renderQ();
+    else showResult();
+  }, 2300);
+}
+
+/* ══════════════════════════════════════════
+   RESULT
+══════════════════════════════════════════ */
+function showResult(){
+  const lv=WORLDS[CW].levels[CL];
+  const total=lv.quiz.length;
+  const stars = qScore===total?3:qScore>=total-1?2:qScore>=1?1:0;
+  const xpGained = stars*50 + qScore*10;
+
+  // save
+  if(!S.stars[CW]) S.stars[CW]=[];
+  S.stars[CW][CL] = Math.max(stars, S.stars[CW][CL]||0);
+  if(CL >= S.progress[CW] && stars>0) S.progress[CW]=CL+1;
+  S.xp += xpGained;
+  saveState();
+  setXP();
+
+  const msgs={
+    3:{e:'🏆',t:'PERFEITO!',s:'Você acertou tudo! Mestre do marketing!'},
+    2:{e:'🌟',t:'ÓTIMO!',s:'Quase perfeito! Você domina bem o conteúdo.'},
+    1:{e:'👍',t:'BOM TRABALHO!',s:'Você aprendeu bastante. Continue praticando!'},
+    0:{e:'💪',t:'TENTE NOVAMENTE!',s:'Revise o conteúdo e tente outra vez!'}
+  };
+  const m=msgs[stars];
+  $id('r-emoji').textContent=m.e;
+  $id('r-title').textContent=m.t;
+  $id('r-sub').textContent=m.s+` (${qScore}/${total} corretas)`;
+  $id('r-stars').textContent='⭐'.repeat(stars)+'☆'.repeat(3-stars);
+  $id('r-xp').textContent=`+ ${xpGained} XP ganhos!`;
+
+  const btn=$id('r-next');
+  const nL=CL+1, nW=CW+1;
+  if(nL < WORLDS[CW].levels.length){
+    btn.textContent='Próxima Fase →';
+    btn.onclick=()=>{CL=nL;beginLevel();};
+  } else if(nW < WORLDS.length){
+    btn.textContent='Próximo Mundo 🌍';
+    btn.onclick=()=>{CW=nW;CL=0;beginLevel();};
+  } else {
+    btn.textContent='🏆 Ver Tudo';
+    btn.onclick=showMap;
+  }
+
+  showScreen('result-screen');
+  if(stars>=2) confetti();
+}
+
+/* ══════════════════════════════════════════
+   CONFETTI
+══════════════════════════════════════════ */
+function confetti(){
+  const c=$id('confetti');
+  c.innerHTML='';
+  const cols=['#f5c842','#ff5c5c','#4ee89a','#5ab4f7','#c084fc','#fff'];
+  for(let i=0;i<70;i++){
+    const p=document.createElement('div');
+    p.className='cp';
+    const sz=7+Math.random()*9;
+    p.style.cssText=`
+      left:${Math.random()*100}%;
+      width:${sz}px;height:${sz}px;
+      background:${cols[Math.floor(Math.random()*cols.length)]};
+      animation-delay:${Math.random()*1.2}s;
+      border-radius:${Math.random()>0.5?'50%':'2px'};
+    `;
+    c.appendChild(p);
+  }
+  setTimeout(()=>c.innerHTML='',4000);
+}
+
+/* ══════════════════════════════════════════
+   INIT
+══════════════════════════════════════════ */
+setXP();
+showScreen('intro');
+</script>
+</body>
+</html>
